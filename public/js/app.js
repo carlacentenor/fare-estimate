@@ -1,7 +1,8 @@
 // Uber API Constants
 var uberClientId = "PkplQl8B-mgnqu3YAQMw2BdN1A2IYQgA";
 var uberServerToken = "klCbeqQcT-VTdF3jhDrolwlYMpamCpV_R0o9ziCW";
-
+var maps = document.getElementById('map');
+var destiny = document.getElementById('destiny');
 // Create variables to store latitude and longitude
 var userLatitude
 , userLongitude
@@ -36,4 +37,32 @@ $.ajax({
     console.log(result.prices);
   }
 });
+}
+
+function initMap() {
+  initAutocomplete();
+  
+  let pos = {
+    lat: -12.020651498087096,
+    lng: -76.93456887128904
+  };
+  let map = new google.maps.Map(maps, {
+    zoom: 5,
+    center: pos
+  });
+  let marker = new google.maps.Marker({
+    position: pos,
+    map: map,
+    
+   
+    
+    
+
+  });
+
+  
+}
+
+function initAutocomplete() {
+  let autocompleteDestiny = new google.maps.places.Autocomplete(destiny);
 }
