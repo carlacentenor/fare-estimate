@@ -47,20 +47,13 @@ function initMap() {
     lng: -76.93456887128904
   };
   let map = new google.maps.Map(maps, {
-    zoom: 5,
+    zoom: 17,
     center: pos
   });
   let marker = new google.maps.Marker({
     position: pos,
     map: map,
-    
-   
-    
-    
-
   });
-
-  
 }
 
 function initAutocomplete() {
