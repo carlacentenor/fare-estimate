@@ -17,6 +17,15 @@
     --darkpurple :#9a287c;
 }
 
+.price-style{
+    background-color: var(--purple);
+    color: white;
+}
+
+.border-pur{
+    border: 2px solid var(--darkpurple);
+}
+
 .btn-search{
     background-color: var(--purple);
     color: white;

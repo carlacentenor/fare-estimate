@@ -1,6 +1,6 @@
 var btnSearch = document.getElementById('btn-search');
 var destiny = document.getElementById('destiny');
-
+var panel = $('.panel-prices');
 // Uber API Constants
 var uberClientId = "PkplQl8B-mgnqu3YAQMw2BdN1A2IYQgA";
 var uberServerToken = "klCbeqQcT-VTdF3jhDrolwlYMpamCpV_R0o9ziCW";
@@ -12,14 +12,7 @@ var userLatitude,
   longDestiny,
   latDestiny;
 
-navigator.geolocation.getCurrentPosition(function (position) {
 
-  userLatitude = position.coords.latitude;
-  userLongitude = position.coords.longitude;
-  // console.log(userLatitude , userLongitude);
-
-  // getEstimatesForUserLocation(userLatitude, userLongitude);
-});
 
 function getEstimatesForUserLocation(latitude, longitude) {
   var proxy = 'https://cors-anywhere.herokuapp.com/';
@@ -33,11 +26,21 @@ function getEstimatesForUserLocation(latitude, longitude) {
     data: {
       start_latitude: latitude,
       start_longitude: longitude,
-      end_latitude: lattDestiny,
-      end_longitude: longgDentiny
+      end_latitude: localStorage.lat,
+      end_longitude: localStorage.long
     },
     success: function (result) {
-      console.log(result.prices);
+     result.prices.forEach(function(element){
+       
+       let template;
+       template = `<div class="row prices-element">
+       <div class="col-6"><p>${element.localized_display_name}</p></div>
+       <div class="col-6"><p>${element.estimate}</p></div>
+       </div>`;
+
+
+       panel.prepend(template);
+     })
     }
   });
 }
@@ -63,46 +66,73 @@ function initMap() {
     lattDestiny;
 
   var geocoder = new google.maps.Geocoder();
-  // geocodeAddress(geocoder, map);
-  
+
+  btnSearch.addEventListener('click', function () {
+    $('.prices-element').remove();
+    geocodeAddress(geocoder, map);
+    navigator.geolocation.getCurrentPosition(function (position) {
+
+      userLatitude = position.coords.latitude;
+      userLongitude = position.coords.longitude;
+
+      getEstimatesForUserLocation(userLatitude, userLongitude);
+    });
+
+
+  });
+
 }
 
 function initAutocomplete() {
   let autocompleteDestiny = new google.maps.places.Autocomplete(destiny);
 }
 
-btnSearch.addEventListener('click', function () {
-  function geocodeAddress(geocoder, resultsMap) {
-    // var address = document.getElementById('address').value;
 
-    geocoder.geocode({ 'address': destinyValue }, function (results, status) {
-      if (status === 'OK') {
-        resultsMap.setCenter(results[0].geometry.location);
-        longgDentiny = results[0].geometry.bounds.f.f;
-        lattDestiny = results[0].geometry.bounds.b.b + 0.03;
-        var marker = new google.maps.Marker({
-          map: resultsMap,
-          position: results[0].geometry.location
-          // return longDestiny;
 
-        });
-        console.log(longgDentiny, lattDestiny);
-      } else {
-        alert('Geocode was not successful for the following reason: ' + status);
-      }
-      console.log(longgDentiny, lattDestiny);
-      localStorage.destinyUbication = longgDentiny + ',' + lattDestiny;
 
-    });
-    console.log(longgDentiny, lattDestiny);
-    console.log(localStorage.destinyUbication);
-    // return (longgDentiny+','+lattDestiny);
+function geocodeAddress(geocoder, resultsMap) {
+  var address = destiny.value;
 
-  }
-  // geocodeAddress(geocoder, map);
-  console.log(userLatitude);
-  getEstimatesForUserLocation(userLatitude, userLongitude);
-});
+  geocoder.geocode({
+    'address': address
+  }, function (results, status) {
+    if (status === 'OK') {
+      resultsMap.setCenter(results[0].geometry.location);
+
+      long = results[0].geometry.location.lng();
+      lat = results[0].geometry.location.lat();
+
+      localStorage.long = long;
+      localStorage.lat = lat;
+
+
+      var marker = new google.maps.Marker({
+        map: resultsMap,
+        position: results[0].geometry.location
+
+      });
+
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+
+
+  });
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // geocodeAddress(geocoder, resultsMap);
 // function calculateAndDisplayRoute(directionsService, directionsDisplay) {
