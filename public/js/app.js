@@ -1,4 +1,5 @@
 var btnSearch = document.getElementById('btn-search');
+var origin = document.getElementById('origin');
 var destiny = document.getElementById('destiny');
 var panel = $('.panel-prices');
 // Uber API Constants
@@ -14,7 +15,7 @@ var userLatitude,
 
 
 
-function getEstimatesForUserLocation(latitude, longitude) {
+function getEstimatesForUserLocation() {
   var proxy = 'https://cors-anywhere.herokuapp.com/';
   var apiUber = `https://api.uber.com/v1/estimates/price`;
 
@@ -24,8 +25,8 @@ function getEstimatesForUserLocation(latitude, longitude) {
       Authorization: "Token " + uberServerToken
     },
     data: {
-      start_latitude: latitude,
-      start_longitude: longitude,
+      start_latitude: localStorage.latOrig,
+      start_longitude: localStorage.longOrig,
       end_latitude: localStorage.lat,
       end_longitude: localStorage.long
     },
@@ -48,6 +49,9 @@ function getEstimatesForUserLocation(latitude, longitude) {
 function initMap() {
   initAutocomplete();
 
+  let directionsService = new google.maps.DirectionsService;
+  let directionsDisplay = new google.maps.DirectionsRenderer;
+
   let pos = {
     lat: -12.020651498087096,
     lng: -76.93456887128904
@@ -61,6 +65,11 @@ function initMap() {
     map: map,
   });
 
+  directionsDisplay.setMap(map);
+  const onChangeHandler = ()=> {
+    calculateAndDisplayRoute(directionsService, directionsDisplay);
+  };
+
   var destinyValue = destiny.value;
   var longgDentiny,
     lattDestiny;
@@ -68,22 +77,25 @@ function initMap() {
   var geocoder = new google.maps.Geocoder();
 
   btnSearch.addEventListener('click', function () {
+    onChangeHandler();
     $('.prices-element').remove();
+    geocodeAddressOr(geocoder, map)
     geocodeAddress(geocoder, map);
-    navigator.geolocation.getCurrentPosition(function (position) {
+   /* navigator.geolocation.getCurrentPosition(function (position) {
 
       userLatitude = position.coords.latitude;
       userLongitude = position.coords.longitude;
 
-      getEstimatesForUserLocation(userLatitude, userLongitude);
-    });
-
+      
+    });*/
+    getEstimatesForUserLocation();
 
   });
 
 }
 
 function initAutocomplete() {
+  let autocompleteOrigin = new google.maps.places.Autocomplete(origin);
   let autocompleteDestiny = new google.maps.places.Autocomplete(destiny);
 }
 
@@ -97,22 +109,15 @@ function geocodeAddress(geocoder, resultsMap) {
     'address': address
   }, function (results, status) {
     if (status === 'OK') {
-      resultsMap.setCenter(results[0].geometry.location);
-
-      long = results[0].geometry.location.lng();
-      lat = results[0].geometry.location.lat();
-
-      localStorage.long = long;
-      localStorage.lat = lat;
 
 
-      var marker = new google.maps.Marker({
-        map: resultsMap,
-        position: results[0].geometry.location
+      longDestiny = results[0].geometry.location.lng();
+      latDestiny = results[0].geometry.location.lat();
 
-      });
+      localStorage.longDestiny = longDestiny;
+      localStorage.latDestiny = latDestiny;
 
-    } else {
+       } else {
       alert('Geocode was not successful for the following reason: ' + status);
     }
 
@@ -123,36 +128,42 @@ function geocodeAddress(geocoder, resultsMap) {
 
 
 
+function geocodeAddressOr(geocoder, resultsMap) {
+  var addressOrigin = origin.value;
+
+  geocoder.geocode({
+    'address': addressOrigin
+  }, function (results, status) {
+    if (status === 'OK') {
 
 
+      longOrig = results[0].geometry.location.lng();
+      latOrig = results[0].geometry.location.lat();
+
+      localStorage.longOrig = longOrig;
+      localStorage.latOrig = latOrig;
+
+       } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
 
 
+  });
+
+}
 
 
+function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+  directionsService.route({
+    origin: origin.value,
+    destination: destiny.value,
+    travelMode: 'DRIVING'
+  }, function(response, status) {
+    if (status === 'OK') {
+      directionsDisplay.setDirections(response);
+    } else {
+      window.alert('Ingrese direcciones correctas');
+    }
+  });
+}
 
-
-
-
-
-// geocodeAddress(geocoder, resultsMap);
-// function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-//   directionsService.route({
-//     origin: origin.value,
-//     destination: destiny.value,
-//     travelMode: 'WALKING'
-//   }, function(response, status) {
-//     if (status === 'OK') {
-//       directionsDisplay.setDirections(response);
-//     } else {
-//       window.alert('Ingrese direcciones correctas');
-//     }
-//   });
-// }
-
-// // calculate rout
-//  directionsDisplay.setMap(map);
-//   const onChangeHandler = ()=> {
-//     calculateAndDisplayRoute(directionsService, directionsDisplay);
-//   };
-//   btnRoute.addEventListener('click', onChangeHandler);
-// }
