@@ -15,7 +15,7 @@ var userLatitude,
 
 
 
-function getEstimatesForUserLocation() {
+function getEstimatesForUserLocation(latitudeOrigin,longitudeOrigin, latitudeDestiny, longitudeDestiny) {
   var proxy = 'https://cors-anywhere.herokuapp.com/';
   var apiUber = `https://api.uber.com/v1/estimates/price`;
 
@@ -25,10 +25,10 @@ function getEstimatesForUserLocation() {
       Authorization: "Token " + uberServerToken
     },
     data: {
-      start_latitude: localStorage.latOrig,
-      start_longitude: localStorage.longOrig,
-      end_latitude: localStorage.lat,
-      end_longitude: localStorage.long
+      start_latitude: latitudeOrigin,
+      start_longitude: longitudeOrigin,
+      end_latitude: latitudeDestiny,
+      end_longitude: longitudeDestiny
     },
     success: function (result) {
      result.prices.forEach(function(element){
@@ -79,16 +79,21 @@ function initMap() {
   btnSearch.addEventListener('click', function () {
     onChangeHandler();
     $('.prices-element').remove();
-    geocodeAddressOr(geocoder, map)
+   geocodeAddressOr(geocoder, map)
     geocodeAddress(geocoder, map);
-   /* navigator.geolocation.getCurrentPosition(function (position) {
+    /*navigator.geolocation.getCurrentPosition(function (position) {
 
       userLatitude = position.coords.latitude;
       userLongitude = position.coords.longitude;
-
+     
       
     });*/
-    getEstimatesForUserLocation();
+
+    var latOr = localStorage.latOrig;
+    var lonOr = localStorage.longOrig;
+    var latDes = localStorage.latDestiny;
+    var lonDes = localStorage.longDestiny;
+    getEstimatesForUserLocation(latOr,lonOr,latDes,lonDes);
 
   });
 
