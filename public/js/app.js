@@ -1,5 +1,4 @@
 var btnSearch = document.getElementById('btn-search');
-
 var destiny = document.getElementById('destiny');
 
 // Uber API Constants
@@ -9,43 +8,43 @@ var maps = document.getElementById('map');
 var destiny = document.getElementById('destiny');
 // Create variables to store latitude and longitude
 var userLatitude,
- userLongitude,
- partyLatitude = -12.12080,
-partyLongitude = -77.02950;
+  userLongitude,
+  longDestiny,
+  latDestiny;
 
-navigator.geolocation.getCurrentPosition(function(position) {
-  
+navigator.geolocation.getCurrentPosition(function (position) {
+
   userLatitude = position.coords.latitude;
   userLongitude = position.coords.longitude;
-// console.log(userLatitude , userLongitude);
+  // console.log(userLatitude , userLongitude);
 
-  getEstimatesForUserLocation(userLatitude, userLongitude);
+  // getEstimatesForUserLocation(userLatitude, userLongitude);
 });
 
-function getEstimatesForUserLocation(latitude,longitude) {
+function getEstimatesForUserLocation(latitude, longitude) {
   var proxy = 'https://cors-anywhere.herokuapp.com/';
   var apiUber = `https://api.uber.com/v1/estimates/price`;
 
-$.ajax({
-  url: proxy + apiUber,
-  headers: {
+  $.ajax({
+    url: proxy + apiUber,
+    headers: {
       Authorization: "Token " + uberServerToken
-  },
-  data: {
-    start_latitude: latitude,
-    start_longitude: longitude,
-    end_latitude: partyLatitude,
-    end_longitude: partyLongitude
-  },
-  success: function(result) {
-    console.log(result.prices);
-  }
-});
+    },
+    data: {
+      start_latitude: latitude,
+      start_longitude: longitude,
+      end_latitude: lattDestiny,
+      end_longitude: longgDentiny
+    },
+    success: function (result) {
+      console.log(result.prices);
+    }
+  });
 }
 
 function initMap() {
   initAutocomplete();
-  
+
   let pos = {
     lat: -12.020651498087096,
     lng: -76.93456887128904
@@ -59,39 +58,53 @@ function initMap() {
     map: map,
   });
 
+  var destinyValue = destiny.value;
+  var longgDentiny,
+    lattDestiny;
+
   var geocoder = new google.maps.Geocoder();
-  btnSearch.addEventListener('click', function(){
-    geocodeAddress(geocoder, map);
-    // console.log(destiny.value);
-    console.log('hey');
-  });
+  // geocodeAddress(geocoder, map);
+  
 }
 
 function initAutocomplete() {
   let autocompleteDestiny = new google.maps.places.Autocomplete(destiny);
 }
 
-function geocodeAddress(geocoder, resultsMap) {
-  // var address = document.getElementById('address').value;
-  var destinyValue = destiny.value;
+btnSearch.addEventListener('click', function () {
+  function geocodeAddress(geocoder, resultsMap) {
+    // var address = document.getElementById('address').value;
 
-  geocoder.geocode({'address': destinyValue}, function(results, status) {
-    if (status === 'OK') {
-      resultsMap.setCenter(results[0].geometry.location);
-      var longDestiny = results[0].geometry.bounds.f.f;
-      var latDestiny = results[0].geometry.bounds.b.b + 0.03;
-console.log(results[0].geometry.bounds.f.f);
-console.log(results[0].geometry.bounds.b.b + 0.03);
-      var marker = new google.maps.Marker({
-        map: resultsMap,
-        position: results[0].geometry.location
-        
-      });
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
+    geocoder.geocode({ 'address': destinyValue }, function (results, status) {
+      if (status === 'OK') {
+        resultsMap.setCenter(results[0].geometry.location);
+        longgDentiny = results[0].geometry.bounds.f.f;
+        lattDestiny = results[0].geometry.bounds.b.b + 0.03;
+        var marker = new google.maps.Marker({
+          map: resultsMap,
+          position: results[0].geometry.location
+          // return longDestiny;
+
+        });
+        console.log(longgDentiny, lattDestiny);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+      console.log(longgDentiny, lattDestiny);
+      localStorage.destinyUbication = longgDentiny + ',' + lattDestiny;
+
+    });
+    console.log(longgDentiny, lattDestiny);
+    console.log(localStorage.destinyUbication);
+    // return (longgDentiny+','+lattDestiny);
+
+  }
+  // geocodeAddress(geocoder, map);
+  console.log(userLatitude);
+  getEstimatesForUserLocation(userLatitude, userLongitude);
+});
+
+// geocodeAddress(geocoder, resultsMap);
 // function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 //   directionsService.route({
 //     origin: origin.value,
