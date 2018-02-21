@@ -3,8 +3,8 @@ var origin = document.getElementById('origin');
 var destiny = document.getElementById('destiny');
 var panel = $('.panel-prices');
 // Uber API Constants
-var uberClientId = "PkplQl8B-mgnqu3YAQMw2BdN1A2IYQgA";
-var uberServerToken = "klCbeqQcT-VTdF3jhDrolwlYMpamCpV_R0o9ziCW";
+var uberClientId = 'PkplQl8B-mgnqu3YAQMw2BdN1A2IYQgA';
+var uberServerToken = 'klCbeqQcT-VTdF3jhDrolwlYMpamCpV_R0o9ziCW';
 var maps = document.getElementById('map');
 var destiny = document.getElementById('destiny');
 // Create variables to store latitude and longitude
@@ -14,15 +14,14 @@ var userLatitude,
   latDestiny;
 
 
-
-function getEstimatesForUserLocation(latitudeOrigin,longitudeOrigin, latitudeDestiny, longitudeDestiny) {
+function getEstimatesForUserLocation(latitudeOrigin, longitudeOrigin, latitudeDestiny, longitudeDestiny) {
   var proxy = 'https://cors-anywhere.herokuapp.com/';
-  var apiUber = `https://api.uber.com/v1/estimates/price`;
+  var apiUber = 'https://api.uber.com/v1/estimates/price';
 
   $.ajax({
     url: proxy + apiUber,
     headers: {
-      Authorization: "Token " + uberServerToken
+      Authorization: 'Token ' + uberServerToken
     },
     data: {
       start_latitude: latitudeOrigin,
@@ -30,18 +29,17 @@ function getEstimatesForUserLocation(latitudeOrigin,longitudeOrigin, latitudeDes
       end_latitude: latitudeDestiny,
       end_longitude: longitudeDestiny
     },
-    success: function (result) {
-     result.prices.forEach(function(element){
-       
-       let template;
-       template = `<div class="row prices-element">
+    success: function(result) {
+      result.prices.forEach(function(element) {
+        let template;
+        template = `<div class="row prices-element">
        <div class="col-6"><p>${element.localized_display_name}</p></div>
        <div class="col-6"><p>${element.estimate}</p></div>
        </div>`;
 
 
-       panel.prepend(template);
-     })
+        panel.prepend(template);
+      });
     }
   });
 }
@@ -76,12 +74,12 @@ function initMap() {
 
   var geocoder = new google.maps.Geocoder();
 
-  btnSearch.addEventListener('click', function () {
+  btnSearch.addEventListener('click', function() {
     onChangeHandler();
     $('.prices-element').remove();
-   geocodeAddressOr(geocoder, map)
+    geocodeAddressOr(geocoder, map);
     geocodeAddress(geocoder, map);
-    /*navigator.geolocation.getCurrentPosition(function (position) {
+    /* navigator.geolocation.getCurrentPosition(function (position) {
 
       userLatitude = position.coords.latitude;
       userLongitude = position.coords.longitude;
@@ -93,10 +91,8 @@ function initMap() {
     var lonOr = localStorage.longOrig;
     var latDes = localStorage.latDestiny;
     var lonDes = localStorage.longDestiny;
-    getEstimatesForUserLocation(latOr,lonOr,latDes,lonDes);
-
+    getEstimatesForUserLocation(latOr, lonOr, latDes, lonDes);
   });
-
 }
 
 function initAutocomplete() {
@@ -105,32 +101,23 @@ function initAutocomplete() {
 }
 
 
-
-
 function geocodeAddress(geocoder, resultsMap) {
   var address = destiny.value;
 
   geocoder.geocode({
     'address': address
-  }, function (results, status) {
+  }, function(results, status) {
     if (status === 'OK') {
-
-
       longDestiny = results[0].geometry.location.lng();
       latDestiny = results[0].geometry.location.lat();
 
       localStorage.longDestiny = longDestiny;
       localStorage.latDestiny = latDestiny;
-
-       } else {
+    } else {
       alert('Geocode was not successful for the following reason: ' + status);
     }
-
-
   });
-
 }
-
 
 
 function geocodeAddressOr(geocoder, resultsMap) {
@@ -138,23 +125,17 @@ function geocodeAddressOr(geocoder, resultsMap) {
 
   geocoder.geocode({
     'address': addressOrigin
-  }, function (results, status) {
+  }, function(results, status) {
     if (status === 'OK') {
-
-
       longOrig = results[0].geometry.location.lng();
       latOrig = results[0].geometry.location.lat();
 
       localStorage.longOrig = longOrig;
       localStorage.latOrig = latOrig;
-
-       } else {
+    } else {
       alert('Geocode was not successful for the following reason: ' + status);
     }
-
-
   });
-
 }
 
 
